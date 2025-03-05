@@ -1,40 +1,34 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import Union
 import random
+from src.schema.schemas import *
+from src.tags import *
 
-app = FastAPI()
-ITEM_NAMES = ["milk", "bread", "cerial", "butter", "egg", "tomato"]
 item_list = []
-
-class Item(BaseModel):
-    id: int
-    name: str
-    price: float
-    quantity: Union[int, None] = None 
+user_list = []
 
 def generate_items(id:int, name: str) -> Item:
-    return Item(id=id, name=name, price=random.randrange(1, 500), quantity=random.randrange(0, 1000))
+    return Item(
+        id=id, 
+        name=name, 
+        price=random.randrange(1, 50), 
+        quantity=random.randrange(0, 1000))
+
+def generate_users(id:int, name:str):
+    mail_service = MAIL_SERVICES[random.randrange(0, len(MAIL_SERVICES))]
+    return User(
+        id=id,
+        first_name=name.split(" ")[0],
+        last_name=name.split(" ")[1],
+        email=f"{name.split(" ")[0].lower()}.{name.split(" ")[1].lower()}@{mail_service}.com",
+        age=random.randrange(18,90),
+        store_credit=random.randrange(0,1000)
+    )
 
 for item in ITEM_NAMES:
     item_list.append(generate_items(id=len(item_list), name=item))
 
-#Get items
-@app.get("/items/{item_id}")
-def get_item(item_id:int):
-    if(item_id > len(item_list)):
-        raise HTTPException(status_code=404, detail="Item ID not found")
-
-    return item_list[item_id]
-
-@app.post("/add-item")
-def post_item(name:str, price:float, quantity:Union[int, None] = None):
-    
-    item_list.append(Item(id=len(item_list), name=name, price=price, quantity=quantity))
-    #TODO: Optimize later
-    #Add item to item list
-    ITEM_NAMES.append(name)
-    
-    return {'status' : 201, 'message' : f"Added {name} to the list of items"}
-
-
+for user in USER_NAMES:
+    user_list.append(
+        generate_users(
+            id=len(user_list),
+            name=user
+        ))
