@@ -84,3 +84,22 @@ def update_item(
         'item' : new_item
     }
     pass
+
+# ----------------------- DELETE REQUESTS ----------------------- #
+
+@item_router.delete("/remove/{item_id}", tags=USE_TAGS["admin"])
+def remove_item(item_id: Union[int, str] = int):
+    
+    # Is item string or number?
+    if type(item_id) != str and type(item_id) != int:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="only item ID or item name can be specified")
+
+    # Is id out of bounds?
+    if type(item_id) == int and item_id > len(item_list):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="incorrect value type, only type int is accepted")
+
+    return item.remove_item(item_id)

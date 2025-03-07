@@ -1,7 +1,6 @@
 from src.main import user_list
 from fastapi import APIRouter, HTTPException, status, Response
 from src.schema.schemas import User
-from typing import Union
 from src.logic import user
 from src.tags import *
 
@@ -55,5 +54,31 @@ def get_user_by_name(name:str):
 
 # ----------------------- POST REQUESTS ----------------------- #
 
+@user_router.put("/create", tags=USE_TAGS["admin"])
+def create_user(
+    first_name:str,
+    last_name:str,
+    age: int,
+    email: str | None = None,
+    store_credit: float | None = None
+    ):
+    
+    if not first_name:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="first name not specified"
+        )
+    if not last_name:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="last name not specified"
+        )
+    if not age:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="age name not specified"
+        )
+
+    return user.create_user(first_name, last_name, age, email, store_credit)
 
 # ----------------------- PUT REQUESTS ----------------------- #

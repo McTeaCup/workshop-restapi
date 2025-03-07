@@ -11,6 +11,6 @@ class User(BaseModel):
     id: int
     first_name: str
     last_name: str
-    email: str
     age: int
-    store_credit: float
+    email: str | None
+    store_credit: float | None
