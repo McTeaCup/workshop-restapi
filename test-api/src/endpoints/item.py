@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, status, Response
 from typing import Union
 from src.main import item_list
-from src.logic import item
 from src.tags import *
+import src.logic.item as item_logic
 
 item_router = APIRouter()
 
@@ -12,7 +12,7 @@ test = "YO WHAT UP"
 
 #Get all items
 @item_router.get("/", tags=USE_TAGS["customer"])
-def get_items():
+def get_items() -> list:
     """
     Returns a of all items and information regarding them.
     """
@@ -46,7 +46,7 @@ def create_item(name:str, price:float, quantity:Union[int, None] = None):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="name can not be empty")
     
-    item = item.create_item(name, price, quantity)
+    item = item_logic.create_item(name, price, quantity)
     
     return {
         'status' : status.HTTP_201_CREATED,
@@ -65,7 +65,7 @@ def update_item(
     """
     Updates a specified item in the list.
     """
-    if not item_id:
+    if type(item_id) != int:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="id of item was not specified"
@@ -76,7 +76,7 @@ def update_item(
             detail="no new values of item's properties was specified"
         )
 
-    new_item = item.update_item(item_id, name, price, quantity)
+    new_item = item_logic.update_item(item_id, name, price, quantity)
 
     return {
         'status' : status.HTTP_200_OK,
