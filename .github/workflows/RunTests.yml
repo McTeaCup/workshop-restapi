@@ -10,9 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: install python
-        run: | 
-          sudo apt install python3 \
-          pwd \
-          pip install requirements.txt
+        run: sudo apt install python3 
+      
+      - name: install depencecy 
+        run: pip install requirements.txt
+        
       - name: run tests
         run: python3 test-api/test/test.py
